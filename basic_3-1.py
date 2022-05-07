@@ -24,27 +24,17 @@ def displayMat(A):
 			print(A[i][j]," ",end="")
 		print()
 
-def helperCharToInt(c):
-	if c=="A":
+def helperCharToInt(val):
+	if val=="A":
 		return 0
-	elif c=="C":
+	elif val=="C":
 		return 1
-	elif c=="G":
+	elif val=="G":
 		return 2
 	else:
 		return 3
 
-def computeMat(A,s1,s2,alpha):
-	for i in range(1,len(s1)+1):
-		for j in range(1,len(s2)+1):
-			xi=helperCharToInt(s1[i-1])
-			yj=helperCharToInt(s2[j-1])
-			alphaval=alpha[xi][yj]
-			# print(s1[i-1],s2[j-1])
-			A[i][j]=min(alphaval+A[i-1][j-1],delta+A[i-1][j],delta+A[i][j-1])
-	return A
-
-def matInitialization(s1,s2,delta):
+def matCompute(s1,s2,delta,alpha):
 	m=len(s1)
 	n=len(s2)
 	A=[[0 for _ in range(n+1)] for _ in range(m+1)]
@@ -52,6 +42,13 @@ def matInitialization(s1,s2,delta):
 		A[i][0]=i*delta
 	for j in range(1,n+1):
 		A[0][j]=j*delta
+
+	for i in range(1,m+1):
+		for j in range(1,n+1):
+			xi=helperCharToInt(s1[i-1])
+			yj=helperCharToInt(s2[j-1])
+			alphaval=alpha[xi][yj]
+			A[i][j]=min(alphaval+A[i-1][j-1],delta+A[i-1][j],delta+A[i][j-1])
 	return A,m,n
 
 def sequenceGeneration(A,m,n,delta):
@@ -99,9 +96,7 @@ def sequenceGeneration(A,m,n,delta):
 	outputFile.write(temp1)
 	outputFile.write("\n"+temp2)
 
-if __name__=="__main__":
-
-	
+if __name__=="__main__":	
 	# Get file contents
 	filename=sys.argv[-1]
 	outputFile=open('output.txt','w')
@@ -116,12 +111,9 @@ if __name__=="__main__":
 	alpha=[[0,110,48,94],[110,0,118,48],[48,118,0,110],[94,48,110,0]]
 
 	# Matrix initialization
-	A,m,n=matInitialization(s1,s2,delta)
-	# Initial values in A	
-	# displayMat(A)
+	A,m,n=matCompute(s1,s2,delta,alpha)
 
-	# Computing minimum matching value
-	A=computeMat(A,s1,s2,alpha)
+	# Displaying some stats
 	# displayMat(A)
 	# Minimum Value
 	# print("\nAlignment Value = ",A[m][n])
