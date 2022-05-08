@@ -57,40 +57,30 @@ def sequenceGeneration(A,m,n,delta):
 	final_s1=""
 	final_s2=""
 	while i>0 and j>0:
-		if A[i][j]==delta+A[i-1][j]:
-			i-=1
-			final_s1=s1[i]+final_s1
-			final_s2="_"+final_s2
-			# print(s1[i],"-")
-		elif A[i][j]==delta+A[i][j-1]:
+		if A[i][j]==delta+A[i][j-1]:
 			j-=1
 			final_s1="_"+final_s1
 			final_s2=s2[j]+final_s2
-			# print("-",s2[j])
+			
+		elif A[i][j]==delta+A[i-1][j]:
+			j-=1
+			final_s1="_"+final_s1
+			final_s2=s2[j]+final_s2
+			
 		else:
 			i-=1
 			j-=1
 			final_s1=s1[i]+final_s1
 			final_s2=s2[j]+final_s2
-			# print(s1[i],s2[j])
 	while i>0:
 		i-=1
 		final_s1=s1[i]+final_s1
 		final_s2="_"+final_s2
-		# print(s1[i],"-")
 	while j>0:
 		j-=1
 		final_s1="_"+final_s1
 		final_s2=s2[j]+final_s2
-		# print("-",s2[j])
 
-	# print("\nActual Alignment: ")
-	# print(final_s1)
-	# print(final_s2)
-
-	# print("\nFirst 50 elements and the last 50 elements:")
-	# print(final_s1[:50]," ",final_s2[:50])
-	# print(final_s1[-50:]," ", final_s2[-50:])
 	temp1=final_s1[:50]+" "+final_s1[-50:]
 	temp2=final_s2[:50]+" "+final_s2[-50:]
 	outputFile.write(temp1)
