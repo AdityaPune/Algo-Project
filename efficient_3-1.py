@@ -54,8 +54,8 @@ def computeMatSpaceEfficientPrefix(s1,s2,alpha,delta):
   for i in range(1,m+1):
     A[1][0] = A[0][0] + delta
     for j in range(1,n+1):
-      xi=intFromChar(s1[i-1])
-      yj=intFromChar(s2[j-1])
+      xi=helperCharToInt(s1[i-1])
+      yj=helperCharToInt(s2[j-1])
       alphaval=alpha[xi][yj]
       # print(s1[i-1],s2[j-1])
       A[1][j]=min(alphaval+A[0][j-1],delta+A[1][j-1],delta+A[0][j])
@@ -72,8 +72,8 @@ def computeMatSpaceEfficientSuffix(s1,s2,alpha,delta):
   for i in range(1,m+1):
     A[1][0] = A[0][0] + delta
     for j in range(1,n+1):
-      xi=intFromChar(s1[m-i])
-      yj=intFromChar(s2[n-j])
+      xi=helperCharToInt(s1[m-i])
+      yj=helperCharToInt(s2[n-j])
       alphaval=alpha[xi][yj]
       # print(s1[i],s2[j])
       A[1][j]=min(alphaval+A[0][j-1],delta+A[1][j-1],delta+A[0][j])
@@ -198,8 +198,6 @@ if __name__=="__main__":
 	# Values of alpha, delta
 	delta=30
 	alpha=[[0,110,48,94],[110,0,118,48],[48,118,0,110],[94,48,110,0]]
-
-	# normalAlignment(s1,s2,alpha,delta)
 
 	# Matrix initialization
 	# A,m,n=matInitialization(s1,s2,delta)
