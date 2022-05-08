@@ -1,157 +1,139 @@
-
 import sys
 import time
 import os,psutil
 
 class algo():
     
-    def generateStrings(self,filename):
+    def initializeMatrix(self,string_1,string_2,delta):
+    	k=len(string_1)
+    	l=len(string_2)
+    	mat=[[0 for i in range(l+1)] for j in range(k+1)]
+    	for i in range(1,k+1):
+    		mat[i][0]=i*delta
+    	for j in range(1,l+1):
+    		mat[0][j]=j*delta
+    	return mat,k,l
+    
+    def calAlignmentNormal(self,string_1,string_2,alpha,delta):
+      mat,k,l=self.initializeMatrix(string_1,string_2,delta)
+      mat=self.calMatrix(mat,string_1,string_2,alpha)
+      i = k
+      j = l
+      final_string_1=""
+      final_string_2=""
+      while i>0 and j>0:
+      	if mat[i][j] == delta + mat[i][j-1]:
+      		j-=1
+      		final_string_1 = '_' + final_string_1
+      		final_string_2 = string_2[j] + final_string_2
+      	elif mat[i][j] == delta + mat[i-1][j]:
+              i -= 1
+              final_string_1 = string_1[i] + final_string_1
+              final_string_2 = '_' + final_string_2
+      	else:
+      		i-=1
+      		j-=1
+      		final_string_1 = string_1[i] + final_string_1
+      		final_string_2 = string_2[j] + final_string_2
+      while i>0:
+      	i-=1
+      	final_string_1 = string_1[i] + final_string_1
+      	final_string_2 = '_' + final_string_2
+      while j>0:
+      	j-=1
+      	final_string_1 = '_' + final_string_1
+      	final_string_2 = string_2[j] + final_string_2
+      return [final_string_1,final_string_2,mat[k][l]]
+    
+    def calAlignment(self,string_1,string_2,alpha,delta):
+      k=len(string_1)
+      l=len(string_2)
+      if k < 2 or l < 2:
+        return self.calAlignmentNormal(string_1,string_2,alpha,delta)
+      else:
+    	  end = self.calMatrixStart(string_1[:k//2],string_2,alpha,delta)
+    	  start = self.calMatrixEnd(string_1[k//2:],string_2,alpha,delta)
+    	  diverge = [end[j] + start[l-j] for j in range(l+1)]
+    	  divide = diverge.index(min(diverge))
+    	  end = []
+    	  start = []
+    	  diverge = []
+    
+    	  align_left = self.calAlignment(string_1[:k//2],string_2[:divide],alpha,delta)
+    	  align_right = self.calAlignment(string_1[k//2:],string_2[divide:],alpha,delta)
+    	  return [align_left[i] + align_right[i] for i in range(3)]
+    
+    def calMatrixEnd(self,string_1,string_2,alpha,delta):
+      k, l=len(string_1), len(string_2)
+      mat=[[0 for i in range(l+1)] for j in range(2)]
+      for i in range(l+1):
+        mat[0][i]=i*delta
+      for i in range(1,k+1):
+        mat[1][0] = mat[0][0] + delta
+        for j in range(1,l+1):
+          e=self.mapChar(string_1[k-i])
+          f=self.mapChar(string_2[l-j])
+          mat[1][j]=min(alpha[e][f]+mat[0][j-1],delta+mat[1][j-1],delta+mat[0][j])
+        for i in range(0, l+1):
+          mat[0][i] = mat[1][i]
+      return mat[1]
+  
+    def calMatrix(self,mat,string_1,string_2,alpha):
+    	for i in range(1,len(string_1)+1):
+    		for j in range(1,len(string_2)+1):
+    			e=self.mapChar(string_1[i-1])
+    			f=self.mapChar(string_2[j-1])
+    			mat[i][j]=min(alpha[e][f]+mat[i-1][j-1],delta+mat[i-1][j],delta+mat[i][j-1])
+    	return mat
+    
+    def calMatrixStart(self,string_1,string_2,alpha,delta):
+      k, l =len(string_1),len(string_2)
+      mat=[[0 for i in range(l+1)] for j in range(2)]
+      for i in range(l+1):
+        mat[0][i]=i*delta
+      for i in range(1,k+1):
+        mat[1][0] = mat[0][0] + delta
+        for j in range(1,l+1):
+          e=self.mapChar(string_1[i-1])
+          f=self.mapChar(string_2[j-1])
+          get_alpha=alpha[e][f]
+          mat[1][j]=min(get_alpha+mat[0][j-1],delta+mat[1][j-1],delta+mat[0][j])
+        for i in range(0, l+1):
+          mat[0][i] = mat[1][i]
+      return mat[1]
+    
+    def mapChar(self,char):
+    	if char=="A": return 0
+    	elif char=="C": return 1
+    	elif char=="G": return 2
+    	else:return 3
+
+    def stringBuilt(self,filename):
     	with open(filename) as f:
-    		s1=""
-    		s2=""
+    		string_1=""
+    		string_2=""
     		curr=""
     		for line in f:
     			temp=line.rstrip()
     			if not temp.isdecimal():
-    				s1=curr
+    				string_1=curr
     				curr=temp
     			else:
     				index=int(temp)+1
     				curr=curr[:index]+curr+curr[index:]
-    	s2=curr
-    	return s1,s2
-    
-    def intFromChar(self,c):
-    	if c=="A": return 0
-    	elif c=="C": return 1
-    	elif c=="G": return 2
-    	else:return 3
-    
-    def computeMat(self,A,s1,s2,alpha):
-    	for i in range(1,len(s1)+1):
-    		for j in range(1,len(s2)+1):
-    			xi=self.intFromChar(s1[i-1])
-    			yj=self.intFromChar(s2[j-1])
-    			# print(s1[i-1],s2[j-1])
-    			A[i][j]=min(alpha[xi][yj]+A[i-1][j-1],delta+A[i-1][j],delta+A[i][j-1])
-    	return A
-    
-    def computeMatSpaceEfficientPrefix(self,s1,s2,alpha,delta):
-      m, n =len(s1),len(s2)
-      A=[[0 for i in range(n+1)] for j in range(2)]
-      for i in range(n+1):
-        A[0][i]=i*delta
-      for i in range(1,m+1):
-        A[1][0] = A[0][0] + delta
-        for j in range(1,n+1):
-          xi=self.intFromChar(s1[i-1])
-          yj=self.intFromChar(s2[j-1])
-          alphaval=alpha[xi][yj]
-          # print(s1[i-1],s2[j-1])
-          A[1][j]=min(alphaval+A[0][j-1],delta+A[1][j-1],delta+A[0][j])
-        for i in range(0, n+1):
-          A[0][i] = A[1][i]
-      return A[1]
-    
-    def computeMatSpaceEfficientSuffix(self,s1,s2,alpha,delta):
-      m, n=len(s1), len(s2)
-      A=[[0 for i in range(n+1)] for j in range(2)]
-      for i in range(n+1):
-        A[0][i]=i*delta
-      for i in range(1,m+1):
-        A[1][0] = A[0][0] + delta
-        for j in range(1,n+1):
-          xi=self.intFromChar(s1[m-i])
-          yj=self.intFromChar(s2[n-j])
-          # print(s1[i],s2[j])
-          A[1][j]=min(alpha[xi][yj]+A[0][j-1],delta+A[1][j-1],delta+A[0][j])
-        for i in range(0, n+1):
-          A[0][i] = A[1][i]
-      return A[1]
-    
-    def spaceEfficientAlignment(self,s1,s2,alpha,delta):
-      m=len(s1)
-      n=len(s2)
-      if m < 2 or n < 2:
-        return self.normalAlignment(s1,s2,alpha,delta)
-      else:
-    	  pref = self.computeMatSpaceEfficientPrefix(s1[:m//2],s2,alpha,delta)
-    	  suff = self.computeMatSpaceEfficientSuffix(s1[m//2:],s2,alpha,delta)
-    # 	  print('pref suff', pref, suff)
-    	  seperation = [pref[j] + suff[n-j] for j in range(n+1)]
-    	  cut = seperation.index(min(seperation))
-    	  pref = []
-    	  suff = []
-    	  seperation = []
-    
-    	  left = self.spaceEfficientAlignment(s1[:m//2],s2[:cut],alpha,delta)
-    	  right = self.spaceEfficientAlignment(s1[m//2:],s2[cut:],alpha,delta)
-    	  return [left[i] + right[i] for i in range(3)]
-    
-    
-    def normalAlignment(self,s1,s2,alpha,delta):
-      A,m,n=self.matInitialization(s1,s2,delta)
-      A=self.computeMat(A,s1,s2,alpha)
-      # print("\nAlignment Value = ",A[m][n])
-      # final_s1, final_s2 = backTracking(A,m,n,delta)
-      # print("back ",final_s1,final_s2)
-      i = m
-      j = n
-      final_s1=""
-      final_s2=""
-      while i>0 and j>0:
-      	if A[i][j] == delta + A[i-1][j]:
-      		i -= 1
-      		final_s1 = s1[i] + final_s1
-      		final_s2 = '_' + final_s2
-      	elif A[i][j] == delta + A[i][j-1]:
-      		j-=1
-      		final_s1 = '_' + final_s1
-      		final_s2 = s2[j] + final_s2
-      	else:
-      		i-=1
-      		j-=1
-      		final_s1 = s1[i] + final_s1
-      		final_s2 = s2[j] + final_s2
-      while i>0:
-      	i-=1
-      	final_s1 = s1[i] + final_s1
-      	final_s2 = '_' + final_s2
-      while j>0:
-      	j-=1
-      	final_s1 = '_' + final_s1
-      	final_s2 = s2[j] + final_s2
-      # print(final_s1,final_s2)
-      return [final_s1,final_s2,A[m][n]]
-    
-    def matInitialization(self,s1,s2,delta):
-    	m=len(s1)
-    	n=len(s2)
-    	A=[[0 for i in range(n+1)] for j in range(m+1)]
-    	for i in range(1,m+1):
-    		A[i][0]=i*delta
-    	for j in range(1,n+1):
-    		A[0][j]=j*delta
-    	return A,m,n
-
+    	string_2=curr
+    	return string_1,string_2
 
 if __name__=="__main__":
-
 	algo = algo()
-	# Get file contents # Generating strings
-	s1, s2 = algo.generateStrings('input1.txt')
+	string_1, string_2 = algo.stringBuilt('input1.txt')
 	process = psutil.Process(os.getpid())
 	start_time = time.time()
 	delta=30
 	alpha=[[0,110,48,94],[110,0,118,48],[48,118,0,110],[94,48,110,0]]
-	ans = algo.spaceEfficientAlignment(s1,s2,alpha,delta)
+	ans = algo.calAlignment(string_1,string_2,alpha,delta)
 	
-	# First 50 elements of A & B
-	print('check', ans)
-# 	print("\n"+ans[0][:50]+" "+ans[0][:-50])
 	outputFile=open('outputeff.txt','w')
-	# Last 50 elements of A & B
-# 	print("\n"+ans[1][:50]+" "+ans[1][-50:])
 	outputFile.write(str(ans[2])+
                     "\n"+ans[0][:50]+" "+ans[0][-50:]+
 					"\n"+ans[1][:50]+" "+ans[1][-50:]+
