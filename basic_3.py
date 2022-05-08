@@ -87,17 +87,23 @@ def sequenceGeneration(A,m,n,delta):
 	temp2=final_s2[:50]+" "+final_s2[-50:]
 	outputFile.write(temp1)
 	outputFile.write("\n"+temp2)
+    
+def process_memory(self):
+    process = psutil.Process()
+    memory_info = process.memory_info()
+    memory_consumed = int(memory_info.rss/1024)
+    return memory_consumed
 
 if __name__=="__main__":	
 	# Get file contents
 	# algo = algo()
 	# file_path=sys.argv[-1]
-	current_directory = os.path.dirname(__file__)
-	parent_directory = os.path.split(current_directory)[0] # Repeat as needed
+	# current_directory = os.path.dirname(__file__)
+	# parent_directory = os.path.split(current_directory)[0] # Repeat as needed
 	
-	file_path = os.path.join(parent_directory, 'SampleTestCases/input3.txt')
+	# file_path = os.path.join(parent_directory, 'SampleTestCases/input3.txt')
+	file_path = sys.argv[-1]
 	s1, s2 = generateStrings(file_path)
-	process = psutil.Process(os.getpid())
 	start_time = time.time()
 	delta=30
 	alpha=[[0,110,48,94],[110,0,118,48],[48,118,0,110],[94,48,110,0]]
@@ -125,6 +131,6 @@ if __name__=="__main__":
 	outputFile.write("\n"+str(time.time() - start_time))  # in seconds
 
 	# print("\nMemory:")
-	outputFile.write("\n"+str(process.memory_info().rss/1024))  # in kilobytes
+	outputFile.write("\n"+str(process_memory()))  # in kilobytes
 
 	outputFile.close()

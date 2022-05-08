@@ -132,9 +132,10 @@ class algo():
 
 if __name__=="__main__":
 	algo = algo()
-	current_directory = os.path.dirname(__file__)
-	parent_directory = os.path.split(current_directory)[0] # Repeat as needed	
-	file_path = os.path.join(parent_directory, 'SampleTestCases/input3.txt')
+	# current_directory = os.path.dirname(__file__)
+	# parent_directory = os.path.split(current_directory)[0] # Repeat as needed	
+	# file_path = os.path.join(parent_directory, 'SampleTestCases/input3.txt')
+	file_path = sys.argv[-1]
 	string_1, string_2 = algo.stringBuilt(file_path)
 	process = psutil.Process(os.getpid())
 	start_time = time.time()
