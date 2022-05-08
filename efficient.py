@@ -141,7 +141,7 @@ if __name__=="__main__":
 	# Get file contents # Generating strings
 	current_directory = os.path.dirname(__file__)
 	parent_directory = os.path.split(current_directory)[0] # Repeat as needed
-	file_path = os.path.join(parent_directory, 'SampleTestCases/input1.txt')
+	file_path = os.path.join(parent_directory, 'SampleTestCases/input2.txt')
 	s1, s2 = algo.generateStrings(file_path)
 	process = psutil.Process(os.getpid())
 	start_time = time.time()

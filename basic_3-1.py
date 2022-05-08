@@ -2,6 +2,8 @@ import sys
 import time
 import os,psutil
 
+
+# class algo():
 def generateStrings(filename):
 	with open(filename) as f:
 		s1=""
@@ -88,17 +90,23 @@ def sequenceGeneration(A,m,n,delta):
 
 if __name__=="__main__":	
 	# Get file contents
-	filename=sys.argv[-1]
-	outputFile=open('output.txt','w')
-
+	# algo = algo()
+	# file_path=sys.argv[-1]
+	current_directory = os.path.dirname(__file__)
+	parent_directory = os.path.split(current_directory)[0] # Repeat as needed
+	
+	file_path = os.path.join(parent_directory, 'SampleTestCases/input3.txt')
+	s1, s2 = generateStrings(file_path)
 	process = psutil.Process(os.getpid())
 	start_time = time.time()
-	# Generating strings
-	s1,s2=generateStrings(filename)
-
-	# Values of alpha, delta
 	delta=30
 	alpha=[[0,110,48,94],[110,0,118,48],[48,118,0,110],[94,48,110,0]]
+
+	# Generating strings
+	s1,s2=generateStrings(file_path)
+	outputFile=open('output.txt','w')
+
+
 
 	# Matrix initialization
 	A,m,n=matCompute(s1,s2,delta,alpha)
