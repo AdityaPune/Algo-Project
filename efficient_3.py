@@ -123,6 +123,12 @@ class algo():
     				curr=curr[:index]+curr+curr[index:]
     	string_2=curr
     	return string_1,string_2
+    
+    def process_memory(self):
+        process = psutil.Process()
+        memory_info = process.memory_info()
+        memory_consumed = int(memory_info.rss/1024)
+        return memory_consumed
 
 if __name__=="__main__":
 	algo = algo()
@@ -135,12 +141,11 @@ if __name__=="__main__":
 	delta=30
 	alpha=[[0,110,48,94],[110,0,118,48],[48,118,0,110],[94,48,110,0]]
 	ans = algo.calAlignment(string_1,string_2,alpha,delta)
-	
 	outputFile=open('outputeff.txt','w')
 	outputFile.write(str(ans[2])+
                     "\n"+ans[0][:50]+" "+ans[0][-50:]+
 					"\n"+ans[1][:50]+" "+ans[1][-50:]+
 					"\n"+str(time.time() - start_time)+
-					"\n"+str(process.memory_info().rss/1024))
+					"\n"+str(algo.process_memory()))
  
 	outputFile.close()
