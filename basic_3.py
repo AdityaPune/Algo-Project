@@ -88,7 +88,7 @@ def sequenceGeneration(A,m,n,delta):
 	outputFile.write(temp1)
 	outputFile.write("\n"+temp2)
     
-def process_memory(self):
+def process_memory():
     process = psutil.Process()
     memory_info = process.memory_info()
     memory_consumed = int(memory_info.rss/1024)
@@ -102,15 +102,12 @@ if __name__=="__main__":
 	# parent_directory = os.path.split(current_directory)[0] # Repeat as needed
 	
 	# file_path = os.path.join(parent_directory, 'SampleTestCases/input3.txt')
-	file_path = sys.argv[-1]
+	file_path = sys.argv[1]
 	s1, s2 = generateStrings(file_path)
 	start_time = time.time()
 	delta=30
 	alpha=[[0,110,48,94],[110,0,118,48],[48,118,0,110],[94,48,110,0]]
-
-	# Generating strings
-	s1,s2=generateStrings(file_path)
-	outputFile=open('output.txt','w')
+	outputFile=open(sys.argv[2],'w')
 
 
 

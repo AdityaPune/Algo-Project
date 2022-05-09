@@ -135,14 +135,14 @@ if __name__=="__main__":
 	# current_directory = os.path.dirname(__file__)
 	# parent_directory = os.path.split(current_directory)[0] # Repeat as needed	
 	# file_path = os.path.join(parent_directory, 'SampleTestCases/input3.txt')
-	file_path = sys.argv[-1]
+	file_path = sys.argv[1]
 	string_1, string_2 = algo.stringBuilt(file_path)
 	process = psutil.Process(os.getpid())
 	start_time = time.time()
 	delta=30
 	alpha=[[0,110,48,94],[110,0,118,48],[48,118,0,110],[94,48,110,0]]
 	ans = algo.calAlignment(string_1,string_2,alpha,delta)
-	outputFile=open('outputeff.txt','w')
+	outputFile=open(sys.argv[2],'w')
 	outputFile.write(str(ans[2])+
                     "\n"+ans[0][:50]+" "+ans[0][-50:]+
 					"\n"+ans[1][:50]+" "+ans[1][-50:]+
